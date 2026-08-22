@@ -94,8 +94,10 @@ if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
             existingAccounts.map((account) => account.teamId)
           );
 
-          // A personal gmail account cannot be used to create a new workspace.
-          if (teamIds.size === 0) {
+          // On the hosted service a personal gmail account cannot be used to
+          // create a new workspace; self-hosted installs have no such
+          // restriction, so allow the account provisioner to create a team.
+          if (teamIds.size === 0 && env.isCloudHosted) {
             throw GmailAccountCreationError();
           }
 
@@ -106,7 +108,9 @@ if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
           }
 
           // Belongs to exactly one workspace — resolve it and sign in there.
-          team = existingAccounts[0].team;
+          if (teamIds.size === 1) {
+            team = existingAccounts[0].team;
+          }
         }
 
         // remove the TLD and form a subdomain from the remaining
