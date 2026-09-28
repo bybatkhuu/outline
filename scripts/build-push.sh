@@ -30,7 +30,7 @@ fi
 
 
 ## --- Variables --- ##
-IMG_VERSION=1.10.0
+IMG_VERSION=1.10.1
 ## --- Variables --- ##
 
 docker build -t outline-base:local -f Dockerfile.base .
