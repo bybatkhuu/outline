@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+
+## --- Base --- ##
+_SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-"$0"}")" >/dev/null 2>&1 && pwd -P)"
+_PROJECT_DIR="$(cd "${_SCRIPT_DIR}/.." >/dev/null 2>&1 && pwd)"
+cd "${_PROJECT_DIR}" || exit 2
+
+
+# shellcheck disable=SC1091
+[ -f .env ] && . .env
+
+
+if ! command -v jq >/dev/null 2>&1; then
+	echo "[ERROR]: Not found 'jq' command, please install it first!" >&2
+	exit 1
+fi
+## --- Base --- ##
+
+
+## --- Variables --- ##
+# Load from environment variables:
+VERSION_FILE_PATH="${VERSION_FILE_PATH:-./package.json}"
+## --- Variables --- ##
+
+
+if [ -n "${VERSION_FILE_PATH}" ] && [ -f "${VERSION_FILE_PATH}" ]; then
+	_current_version=$(jq -r '.version' "${VERSION_FILE_PATH}") || exit 2
+else
+	_current_version="0.0.0-$(date -u '+%y%m%d')"
+fi
+
+echo "${_current_version}"

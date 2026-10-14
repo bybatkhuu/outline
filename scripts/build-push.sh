@@ -26,15 +26,20 @@ if ! docker compose > /dev/null 2>&1; then
 	echo "[ERROR]: 'docker compose' not found or not installed!" >&2
 	exit 1
 fi
+
+if [ ! -f ./scripts/get-version.sh ]; then
+	echo "[ERROR]: 'get-version.sh' script not found!" >&2
+	exit 1
+fi
 ## --- Base --- ##
 
 
 ## --- Variables --- ##
-IMG_VERSION=1.10.1
+IMG_VERSION=${IMG_VERSION:-$(./scripts/get-version.sh)}
 ## --- Variables --- ##
 
 docker build -t outline-base:local -f Dockerfile.base .
 
-docker build -t bybatkhuu/outline:${IMG_VERSION} --build-arg BASE_IMAGE=outline-base:local .
+docker build -t "bybatkhuu/outline:${IMG_VERSION}" --build-arg BASE_IMAGE=outline-base:local .
 
-docker push bybatkhuu/outline:${IMG_VERSION}
+docker push "bybatkhuu/outline:${IMG_VERSION}"
