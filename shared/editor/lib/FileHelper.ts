@@ -81,6 +81,22 @@ export default class FileHelper {
   }
 
   /**
+   * Loads an image, so that an image element with the same source displays it
+   * without delay.
+   *
+   * @param src The source URL of the image.
+   * @returns A promise that resolves when the image loads or fails to load.
+   */
+  static loadImage(src: string): Promise<void> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = src;
+    });
+  }
+
+  /**
    * Loads the dimensions of a video file.
    *
    * @param file The file to load the dimensions for
@@ -330,7 +346,7 @@ export default class FileHelper {
               if (compressionMethod === 0) {
                 // 0 = deflate compression
                 const compressed = data.slice(nullIndex + 2);
-                textContent = inflate(compressed, { to: "string" });
+                textContent = inflate(compressed, { toText: true });
               } else {
                 continue; // Unsupported compression method
               }
@@ -366,7 +382,7 @@ export default class FileHelper {
                 }
                 pos++; // Skip null after translated keyword
                 const compressed = data.slice(pos);
-                textContent = inflate(compressed, { to: "string" });
+                textContent = inflate(compressed, { toText: true });
               } else {
                 continue; // Invalid compression flag
               }
